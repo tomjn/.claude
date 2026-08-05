@@ -30,7 +30,6 @@ plans-archive/
 !.gitignore
 !CLAUDE.md
 !settings.json
-!ripgreprc
 
 !agents/**
 !commands/**
