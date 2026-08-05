@@ -1,19 +1,21 @@
 # read-once CLI (PowerShell) -- view stats, manage cache, install hook
 #
 # Usage:
-#   pwsh read-once.ps1 stats         Show token savings for current/recent sessions
-#   pwsh read-once.ps1 gain          Same as stats (RTK-style)
+#   pwsh read-once.ps1 stats [--json]  Show token savings for current/recent sessions
+#   pwsh read-once.ps1 gain [--json]   Same as stats (RTK-style)
 #   pwsh read-once.ps1 status        Quick health check
 #   pwsh read-once.ps1 verify        Full diagnostic with dry-run test
 #   pwsh read-once.ps1 clear         Clear session cache (start fresh)
-#   pwsh read-once.ps1 install       Install hook to ~/.claude/read-once/hook.ps1
+#   pwsh read-once.ps1 install       Install hooks to ~/.claude/read-once/
 #   pwsh read-once.ps1 upgrade       Update installed hook to latest version
 #   pwsh read-once.ps1 uninstall     Remove hook from .claude/settings.json
 #   pwsh read-once.ps1 help          Show this help
 
 param(
     [Parameter(Position=0)]
-    [string]$Command = 'help'
+    [string]$Command = 'help',
+    [Parameter(Position=1)]
+    [string]$Format = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -22,17 +24,60 @@ $CacheDir = Join-Path $HOME '.claude' 'read-once'
 $StatsFile = Join-Path $CacheDir 'stats.jsonl'
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $HookSource = Join-Path $ScriptDir 'hook.ps1'
+$CompactSource = Join-Path $ScriptDir 'compact.ps1'
 $SettingsFile = Join-Path $HOME '.claude' 'settings.json'
 $InstalledHook = Join-Path $CacheDir 'hook.ps1'
+$InstalledCompact = Join-Path $CacheDir 'compact.ps1'
+
+function Quote-CommandPath {
+    param([string]$Path)
+    '"' + $Path.Replace('"', '\"') + '"'
+}
 
 function Show-Stats {
+    param([bool]$Json = $false)
+
     if (-not (Test-Path $StatsFile)) {
+        if ($Json) {
+            [ordered]@{
+                mode = 'stats'
+                has_data = $false
+                total_file_reads = 0
+                cache_hits = 0
+                diff_hits = 0
+                first_reads = 0
+                changed_files = 0
+                ttl_expired = 0
+                tokens_saved = 0
+                read_token_total = 0
+                savings_pct = 0
+                sessions_tracked = 0
+            } | ConvertTo-Json -Compress
+            return
+        }
         Write-Host "No read-once data yet. Stats appear after your first Claude Code session with the hook installed."
         return
     }
 
     $lines = Get-Content $StatsFile -ErrorAction SilentlyContinue
     if (-not $lines -or $lines.Count -eq 0) {
+        if ($Json) {
+            [ordered]@{
+                mode = 'stats'
+                has_data = $true
+                total_file_reads = 0
+                cache_hits = 0
+                diff_hits = 0
+                first_reads = 0
+                changed_files = 0
+                ttl_expired = 0
+                tokens_saved = 0
+                read_token_total = 0
+                savings_pct = 0
+                sessions_tracked = 0
+            } | ConvertTo-Json -Compress
+            return
+        }
         Write-Host "No reads tracked yet."
         return
     }
@@ -96,10 +141,33 @@ function Show-Stats {
     $ttl = if ($env:READ_ONCE_TTL) { [int]$env:READ_ONCE_TTL } else { 1200 }
     $ttlMin = [int]($ttl / 60)
 
+    if ($Json) {
+        [ordered]@{
+            mode = 'stats'
+            has_data = $true
+            total_file_reads = $totalReads
+            cache_hits = $totalHits
+            diff_hits = $totalDiffs
+            first_reads = $totalMisses
+            changed_files = $totalChanged
+            ttl_expired = $totalExpired
+            tokens_saved = $tokensSaved
+            read_token_total = $tokensTotal
+            savings_pct = $savingsPct
+            sessions_tracked = $sessions.Count
+            cache_ttl_seconds = $ttl
+            cost_saved = [ordered]@{
+                sonnet_usd = [math]::Round($tokensSaved * 3 / 1000000, 4)
+                opus_usd = [math]::Round($tokensSaved * 15 / 1000000, 4)
+            }
+        } | ConvertTo-Json -Compress
+        return
+    }
+
     Write-Host "read-once - file read deduplication for Claude Code"
     Write-Host ""
     Write-Host "  Total file reads:    $totalReads"
-    Write-Host "  Cache hits:          $totalHits (blocked re-reads)"
+    Write-Host "  Cache hits:          $totalHits (re-read advisories/blocks)"
     if ($totalDiffs -gt 0) {
         Write-Host "  Diff hits:           $totalDiffs (changed files - sent diff only)"
     }
@@ -178,7 +246,7 @@ function Install-Hook {
         return
     }
 
-    # Copy hook to stable path
+    # Copy hooks to stable paths
     if (-not (Test-Path $CacheDir)) {
         New-Item -ItemType Directory -Path $CacheDir -Force | Out-Null
     }
@@ -187,8 +255,13 @@ function Install-Hook {
         Write-Host "Error: hook.ps1 not found at $HookSource"
         exit 1
     }
+    if (-not (Test-Path $CompactSource)) {
+        Write-Host "Error: compact.ps1 not found at $CompactSource"
+        exit 1
+    }
 
     Copy-Item $HookSource $InstalledHook -Force
+    Copy-Item $CompactSource $InstalledCompact -Force
 
     # Update settings.json
     $settings = Get-Content $SettingsFile -Raw | ConvertFrom-Json
@@ -199,25 +272,38 @@ function Install-Hook {
     if (-not $settings.hooks.PreToolUse) {
         $settings.hooks | Add-Member -NotePropertyName 'PreToolUse' -NotePropertyValue @()
     }
+    if (-not $settings.hooks.PostCompact) {
+        $settings.hooks | Add-Member -NotePropertyName 'PostCompact' -NotePropertyValue @()
+    }
 
     $hookEntry = [PSCustomObject]@{
         matcher = 'Read'
         hooks = @(
             [PSCustomObject]@{
                 type = 'command'
-                command = "pwsh -File ~/.claude/read-once/hook.ps1"
+                command = "pwsh -File $(Quote-CommandPath $InstalledHook)"
+            }
+        )
+    }
+    $compactEntry = [PSCustomObject]@{
+        hooks = @(
+            [PSCustomObject]@{
+                type = 'command'
+                command = "pwsh -File $(Quote-CommandPath $InstalledCompact)"
             }
         )
     }
 
     $settings.hooks.PreToolUse += $hookEntry
+    $settings.hooks.PostCompact += $compactEntry
     $settings | ConvertTo-Json -Depth 10 | Set-Content $SettingsFile
 
-    Write-Host "read-once hook installed."
+    Write-Host "read-once hooks installed."
     Write-Host "Hook: $InstalledHook"
+    Write-Host "PostCompact: $InstalledCompact"
     Write-Host ""
     Write-Host "Your Claude Code sessions will now track and deduplicate file reads."
-    Write-Host "The hook is installed at a stable path - you can move or delete the source repo."
+    Write-Host "The hooks are installed at stable paths - you can move or delete the source repo."
 }
 
 function Invoke-Upgrade {
@@ -230,7 +316,10 @@ function Invoke-Upgrade {
         exit 1
     }
     Copy-Item $HookSource $InstalledHook -Force
-    Write-Host "Hook upgraded to latest version."
+    if (Test-Path $CompactSource) {
+        Copy-Item $CompactSource $InstalledCompact -Force
+    }
+    Write-Host "Hooks upgraded to latest version."
 }
 
 function Invoke-Uninstall {
@@ -248,15 +337,27 @@ function Invoke-Uninstall {
         })
         $settings.hooks.PreToolUse = $filtered
     }
+    if ($settings.hooks -and $settings.hooks.PostCompact) {
+        $filtered = @($settings.hooks.PostCompact | Where-Object {
+            $cmd = $_.hooks[0].command
+            -not ($cmd -and $cmd -match 'read-once')
+        })
+        $settings.hooks.PostCompact = $filtered
+    }
 
     $settings | ConvertTo-Json -Depth 10 | Set-Content $SettingsFile
-    Write-Host "read-once hook removed from settings."
+    Write-Host "read-once hooks removed from settings."
 }
 
 function Clear-Cache {
     $removed = 0
     Get-ChildItem -Path $CacheDir -Filter 'session-*.jsonl' -ErrorAction SilentlyContinue | ForEach-Object {
         Remove-Item $_.FullName -Force
+        $removed++
+    }
+    $globalCache = Join-Path $CacheDir 'cache-global.jsonl'
+    if (Test-Path $globalCache) {
+        Remove-Item $globalCache -Force
         $removed++
     }
     Write-Host "Session cache cleared ($removed files). Stats preserved."
@@ -318,6 +419,12 @@ function Invoke-Verify {
         Check-Fail "Hook file not found at $InstalledHook" "pwsh read-once.ps1 install"
     }
 
+    if (Test-Path $InstalledCompact) {
+        Check-Pass "PostCompact hook file exists at $InstalledCompact"
+    } else {
+        Check-Fail "PostCompact hook file not found at $InstalledCompact" "pwsh read-once.ps1 install"
+    }
+
     if (Test-Path $SettingsFile) {
         Check-Pass "~/.claude/settings.json exists"
         try {
@@ -336,7 +443,7 @@ function Invoke-Verify {
                     } else {
                         $hookPath = $expanded
                     }
-                    $hookPath = $hookPath -replace '^~', $HOME
+                    $hookPath = ($hookPath -replace '^~', $HOME).Trim([char[]]@('"', "'"))
                     if (Test-Path $hookPath) {
                         Check-Pass "Hook command path resolves ($hookCmd)"
                     } else {
@@ -345,6 +452,13 @@ function Invoke-Verify {
                 }
             } else {
                 Check-Fail "No PreToolUse Read matcher in settings.json" "pwsh read-once.ps1 install"
+            }
+
+            $compactHooks = @($settings.hooks.PostCompact | Where-Object { $_.hooks[0].command -match 'read-once' })
+            if ($compactHooks.Count -gt 0) {
+                Check-Pass "PostCompact hook configured"
+            } else {
+                Check-Fail "No PostCompact hook in settings.json" "pwsh read-once.ps1 install"
             }
         } catch {
             Check-Fail "settings.json is invalid JSON" "Check for syntax errors"
@@ -445,8 +559,8 @@ function Show-Help {
     Write-Host "read-once - Stop Claude Code from re-reading files it already has"
     Write-Host ""
     Write-Host "Usage:"
-    Write-Host "  pwsh read-once.ps1 stats       Show token savings"
-    Write-Host "  pwsh read-once.ps1 gain        Same as stats (RTK-style)"
+    Write-Host "  pwsh read-once.ps1 stats [--json]  Show token savings"
+    Write-Host "  pwsh read-once.ps1 gain [--json]   Same as stats (RTK-style)"
     Write-Host "  pwsh read-once.ps1 status      Quick health check"
     Write-Host "  pwsh read-once.ps1 verify      Full diagnostic with dry-run test"
     Write-Host "  pwsh read-once.ps1 clear       Clear session cache"
@@ -457,8 +571,8 @@ function Show-Help {
     Write-Host "How it works:"
     Write-Host "  A PreToolUse hook intercepts Read calls. When Claude tries to"
     Write-Host "  re-read a file it already read this session (and the file hasn't"
-    Write-Host "  changed), the hook blocks the read and tells Claude the content"
-    Write-Host "  is already in context. Saves ~2000+ tokens per prevented re-read."
+    Write-Host "  changed), warn mode allows the read with an advisory and deny mode"
+    Write-Host "  blocks it with a reason. Saves ~2000+ tokens per prevented hard re-read."
     Write-Host ""
     Write-Host "Compaction safety:"
     Write-Host "  Cache entries expire after READ_ONCE_TTL seconds (default: 1200 = 20m)."
@@ -474,7 +588,7 @@ function Show-Help {
 
 # Dispatch
 switch ($Command.ToLower()) {
-    { $_ -in 'stats', 'gain' } { Show-Stats }
+    { $_ -in 'stats', 'gain' } { Show-Stats -Json ($Format -eq '--json') }
     'status'                    { Show-Status }
     'install'                   { Install-Hook }
     'upgrade'                   { Invoke-Upgrade }
