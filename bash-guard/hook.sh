@@ -52,7 +52,11 @@
 # Install:
 #   curl -fsSL https://raw.githubusercontent.com/Bande-a-Bonnot/Boucle-framework/main/tools/bash-guard/install.sh | bash
 #
-# Config (.bash-guard):
+# Config (three-layer hierarchy, merged in order):
+#   ~/.bash-guard           global — personal defaults for all projects
+#   .bash-guard             project — commit to git for team sharing
+#   .bash-guard.local       local — personal overrides, add to .gitignore
+#
 #   allow: sudo           # whitelist specific operations
 #   allow: rm -rf
 #   allow: pipe-to-shell
@@ -63,6 +67,7 @@
 # Env vars:
 #   BASH_GUARD_DISABLED=1    Disable the hook entirely
 #   BASH_GUARD_LOG=1         Log all checks to stderr
+#   BASH_GUARD_CONFIG=path   Load a single explicit config file (no layering)
 
 set -euo pipefail
 
@@ -91,11 +96,18 @@ log() {
 }
 
 # Load allowlist and denylist from .bash-guard config
+# Supports three-layer hierarchy (merged in order):
+#   1. ~/.bash-guard        — global, applies to all projects
+#   2. .bash-guard          — project-level, commit to git for team sharing
+#   3. .bash-guard.local    — local personal overrides, add to .gitignore
+# Set BASH_GUARD_CONFIG to load a single explicit file instead (no layering).
 ALLOWED=()
 DENIED=()
-CONFIG="${BASH_GUARD_CONFIG:-.bash-guard}"
-if [ -f "$CONFIG" ]; then
-  while IFS= read -r line; do
+
+_load_bash_guard_config() {
+  local cfg="$1" line pattern
+  [ -f "$cfg" ] && [ -r "$cfg" ] || return 0
+  while IFS= read -r line || [ -n "$line" ]; do
     line=$(echo "$line" | sed 's/#.*//' | xargs)
     [ -z "$line" ] && continue
     if [[ "$line" == allow:* ]]; then
@@ -105,7 +117,21 @@ if [ -f "$CONFIG" ]; then
       pattern=$(echo "$line" | sed 's/^deny:\s*//' | xargs)
       DENIED+=("$pattern")
     fi
-  done < "$CONFIG"
+  done < "$cfg"
+}
+
+if [ -n "${BASH_GUARD_CONFIG+x}" ]; then
+  # Explicit single-file override — no layering (backward compat).
+  # Empty string (BASH_GUARD_CONFIG="") means: skip all config layers.
+  _load_bash_guard_config "$BASH_GUARD_CONFIG"
+else
+  # Three-layer merge: global → project → local.
+  # Note: an allow: in any layer whitelists the operation for built-in checks
+  # across all projects. Use a custom deny: rule in .bash-guard to override a
+  # global allow: for a specific project (custom deny runs before is_allowed).
+  [ -n "${HOME:-}" ] && _load_bash_guard_config "$HOME/.bash-guard"
+  _load_bash_guard_config ".bash-guard"
+  _load_bash_guard_config ".bash-guard.local"
 fi
 
 # Check if an operation is allowed via config
@@ -118,6 +144,11 @@ is_allowed() {
     fi
   done
   return 1
+}
+
+has_inline_allow() {
+  local op="$1"
+  [[ "$COMMAND" =~ (^|[[:space:];&|])#[[:space:]]*bash-guard:[[:space:]]*allow[[:space:]]+$op([[:space:]]|$) ]]
 }
 
 block() {
@@ -528,15 +559,15 @@ fi
 # In-place file editing via interpreters (bypasses file-guard, #40408)
 # perl -i, perl -pi, perl -i.bak — in-place edit like sed -i
 if echo "$COMMAND" | grep -qE '(^|[;&|]\s*)perl\s+(-[A-Za-z]*i|-i[^\s]*)' 2>/dev/null; then
-  is_allowed "inplace-edit" || block "Perl in-place file editing (perl -i) modifies files directly, bypassing file-guard protection. Reported in claude-code#40408." "Use Edit tool instead, which respects file-guard rules. Or add 'allow: inplace-edit' to .bash-guard."
+  is_allowed "inplace-edit" || has_inline_allow "inplace-edit" || block "Perl in-place file editing (perl -i) modifies files directly, bypassing file-guard protection. Reported in claude-code#40408." "Use a non-in-place rewrite to a temporary file and move/copy it back, or add '# bash-guard: allow inplace-edit' to this one command when Edit/Write cannot preserve the bytes you need."
 fi
 # ruby -i — in-place edit
 if echo "$COMMAND" | grep -qE '(^|[;&|]\s*)ruby\s+(-[A-Za-z]*i|-i[^\s]*)' 2>/dev/null; then
-  is_allowed "inplace-edit" || block "Ruby in-place file editing (ruby -i) modifies files directly, bypassing file-guard protection." "Use Edit tool instead, which respects file-guard rules. Or add 'allow: inplace-edit' to .bash-guard."
+  is_allowed "inplace-edit" || has_inline_allow "inplace-edit" || block "Ruby in-place file editing (ruby -i) modifies files directly, bypassing file-guard protection." "Use a non-in-place rewrite to a temporary file and move/copy it back, or add '# bash-guard: allow inplace-edit' to this one command when Edit/Write cannot preserve the bytes you need."
 fi
 # sed -i — in-place edit (most common form)
 if echo "$COMMAND" | grep -qE '(^|[;&|]\s*)sed\s+(-[A-Za-z]*i|-i[^\s]*)' 2>/dev/null; then
-  is_allowed "inplace-edit" || block "sed in-place editing (sed -i) modifies files directly, bypassing file-guard protection." "Use Edit tool instead, which respects file-guard rules. Or add 'allow: inplace-edit' to .bash-guard."
+  is_allowed "inplace-edit" || has_inline_allow "inplace-edit" || block "sed in-place editing (sed -i) modifies files directly, bypassing file-guard protection." "Use a non-in-place rewrite to a temporary file and move/copy it back, or add '# bash-guard: allow inplace-edit' to this one command when Edit/Write cannot preserve the bytes you need."
 fi
 
 # --- Gaps identified from competitive analysis (RoaringFerrum/bash-guardian, buildatscale-tv) ---
@@ -597,7 +628,19 @@ if echo "$COMMAND" | grep -qE '(^|[;&|]\s*)service\s+\S+\s+(start|stop|restart)'
 fi
 
 # ssh-keygen (key generation) and ssh-add (agent operations)
-if echo "$COMMAND" | grep -qE '(^|[;&|]\s*)ssh-keygen\s' 2>/dev/null; then
+# Exempt known_hosts management given as the first flag: -R (remove host) and
+# -F (find host). These create no keys and grant no access -- they only read or
+# edit known_hosts. -R is the standard cleanup after a host key changes (e.g. a
+# cloud instance is replaced and presents a new key); blocking it forces users
+# to allow the entire ssh-keys rule -- including the far riskier ssh-add -- just
+# to delete a stale known_hosts line, a net loss for security.
+#
+# Strip each exempt invocation from a copy of the command, then block if any
+# ssh-keygen remains. Stripping per-invocation (rather than testing the whole
+# command for "contains an exempt form") prevents a safe `ssh-keygen -R` from
+# masking an unsafe one in a chain like `ssh-keygen -R host && ssh-keygen -t rsa`.
+ssh_keygen_remainder=$(echo "$COMMAND" | sed -E 's/(^|[;&|][[:space:]]*)ssh-keygen[[:space:]]+-[RF]([[:space:]]|$)/\1/g')
+if echo "$ssh_keygen_remainder" | grep -qE '(^|[;&|]\s*)ssh-keygen(\s|$)' 2>/dev/null; then
   is_allowed "ssh-keys" || block "ssh-keygen creates or modifies SSH keys which grant remote server access." "Add 'allow: ssh-keys' to .bash-guard if you need to generate SSH keys."
 fi
 if echo "$COMMAND" | grep -qE '(^|[;&|]\s*)ssh-add\s' 2>/dev/null; then
