@@ -1,0 +1,62 @@
+# Deny everything by default. Anything Claude Code adds in future is ignored
+# until it is explicitly allowed below.
+*
+
+# Allow git to descend into directories so the allow rules below can match.
+!*/
+
+# Re-ignore directories that hold credentials, transcripts or churn.
+# Nothing inside these can be un-ignored, which is the point.
+daemon/
+projects/
+sessions/
+session-env/
+session-logs/
+shell-snapshots/
+file-history/
+backups/
+paste-cache/
+readout-chats/
+jobs/
+tasks/
+debug/
+cache/
+ide/
+plugins/
+plans/
+plans-archive/
+
+# Config and scripts worth tracking.
+!.gitignore
+!CLAUDE.md
+!settings.json
+!ripgreprc
+
+!agents/**
+!commands/**
+!rules/**
+!skills/**
+!hooks/**
+!scripts/**
+
+# Hook directories: the scripts only, not the state they write.
+!bash-guard/*.sh
+!branch-guard/*.sh
+!file-guard/*.sh
+!gh-softwrap/*.sh
+!git-safe/*.sh
+!session-log/*.sh
+!worktree-guard/*.sh
+!read-once/*.sh
+!read-once/*.ps1
+!read-once/read-once
+
+# Statusline scripts.
+!abtop-statusline.sh
+!hud-pace.sh
+
+# Never, under any circumstances.
+.credentials.json
+*.key
+*.pem
+.DS_Store
