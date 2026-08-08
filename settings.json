@@ -1,0 +1,510 @@
+{
+  "respectGitignore": true,
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "3000000",
+    "BASH_MAX_TIMEOUT_MS": "3000000",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80",
+    "CLAUDE_CODE_ATTRIBUTION_HEADER": "false",
+    "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "false",
+    "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "true",
+    "CLAUDE_CODE_IDE_SKIP_VALID_CHECK": "true",
+    "DISABLE_ERROR_REPORTING": "true",
+    "DISABLE_TELEMETRY": "true",
+    "MAX_CONSECUTIVE_AUTOCOMPACT_FAILURES": "3"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "Agent",
+      "Bash(acli --help)",
+      "Bash(acli jira --help)",
+      "Bash(acli jira auth status)",
+      "Bash(acli jira board --help)",
+      "Bash(acli jira board list-sprints:*)",
+      "Bash(acli jira board search --help)",
+      "Bash(acli jira board search:*)",
+      "Bash(acli jira project:*)",
+      "Bash(acli jira sprint --help)",
+      "Bash(acli jira sprint list-workitems:*)",
+      "Bash(acli jira user search:*)",
+      "Bash(acli jira workitem:*)",
+      "Bash(acli sprint list:*)",
+      "Bash(ast-grep:*)",
+      "Bash(bat:*)",
+      "Bash(btop:*)",
+      "Bash(brew info:*)",
+      "Bash(brew list:*)",
+      "Bash(bun:*)",
+      "Bash(cargo:*)",
+      "Bash(cat:*)",
+      "Bash(claude --version)",
+      "Bash(clang++ --version)",
+      "Bash(cmake --version)",
+      "Bash(cmux help:*)",
+      "Bash(cmux list-panels:*)",
+      "Bash(cmux list-workspaces:*)",
+      "Bash(composer:*)",
+      "Bash(conan graph:*)",
+      "Bash(conan list:*)",
+      "Bash(conan inspect:*)",
+      "Bash(conan version:*)",
+      "Bash(cp:*)",
+      "Bash(date:*)",
+      "Bash(ddev:*)",
+      "Bash(delta:*)",
+      "Bash(diff:*)",
+      "Bash(dig:*)",
+      "Bash(du:*)",
+      "Bash(echo:*)",
+      "Bash(eza:*)",
+      "Bash(fd:*)",
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git apply:*)",
+      "Bash(git branch:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(git checkout:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git commit:*)",
+      "Bash(git describe:*)",
+      "Bash(git --no-pager diff:*)",
+      "Bash(git diff:*)",
+      "Bash(git fetch:*)",
+      "Bash(git grep:*)",
+      "Bash(git log:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git ls-remote:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(git remote -v)",
+      "Bash(git reset:*)",
+      "Bash(git rev-list:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git rm:*)",
+      "Bash(git show:*)",
+      "Bash(git stash:*)",
+      "Bash(git status:*)",
+      "Bash(git switch:*)",
+      "Bash(git tag:*)",
+      "Bash(git worktree:*)",
+      "Bash(gh api:*)",
+      "Bash(gh gist view:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh pr edit:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh pr checkout:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh project field-list:*)",
+      "Bash(gh project item-list:*)",
+      "Bash(gh project view:*)",
+      "Bash(gh release list:*)",
+      "Bash(gh release view:*)",
+      "Bash(gh repo list:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh run download:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run watch:*)",
+      "Bash(gh search:*)",
+      "Bash(gh submodule status:*)",
+      "Bash(grep:*)",
+      "Bash(head:*)",
+      "Bash(host:*)",
+      "Bash(ioreg:*)",
+      "Bash(jq:*)",
+      "Bash(less:*)",
+      "Bash(log show:*)",
+      "Bash(ls:*)",
+      "Bash(lsof:*)",
+      "Bash(magick:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(node --check:*)",
+      "Bash(npm list:*)",
+      "Bash(npm outdated:*)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(npm view:*)",
+      "Bash(npm whoami:*)",
+      "Bash(npx -y react-doctor@latest:*)",
+      "Bash(npx biome check:*)",
+      "Bash(npx react-doctor@latest:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vite build:*)",
+      "Bash(nvm use)",
+      "Bash(nslookup:*)",
+      "Bash(ollama:*)",
+      "Bash(pgrep:*)",
+      "Bash(php -l:*)",
+      "Bash(phpcbf:*)",
+      "Bash(phpcs:*)",
+      "Bash(phpstan:*)",
+      "Bash(ping:*)",
+      "Bash(ping6:*)",
+      "Bash(pip list:*)",
+      "Bash(pmset -g batt:*)",
+      "Bash(printf:*)",
+      "Bash(ps:*)",
+      "Bash(pwd:*)",
+      "Bash(python3:*)",
+      "Bash(read:*)",
+      "Bash(readlink:*)",
+      "Bash(rg:*)",
+      "Bash(rustc --print target-list)",
+      "Bash(rustup target --list)",
+      "Bash(shortcuts list:*)",
+      "Bash(sort:*)",
+      "Bash(source ~/.nvm/nvm.sh)",
+      "Bash(stat:*)",
+      "Bash(swift --version)",
+      "Bash(swift test:*)",
+      "Bash(sw_vers:*)",
+      "Bash(system_profiler:*)",
+      "Bash(tail:*)",
+      "Bash(test:*)",
+      "Bash(tr:*)",
+      "Bash(traceroute:*)",
+      "Bash(tree:*)",
+      "Bash(tsc:*)",
+      "Bash(uniq:*)",
+      "Bash(unzip:*)",
+      "Bash(vagrant:*)",
+      "Bash(vendor/bin/phpcs:*)",
+      "Bash(vendor/bin/phpstan:*)",
+      "Bash(./vendor/bin/phpcs:*)",
+      "Bash(wc:*)",
+      "Bash(whois:*)",
+      "Bash(wp:*)",
+      "Bash(xargs basename:*)",
+      "Bash(xargs cat:*)",
+      "Bash(xargs ls:*)",
+      "Bash(xargs rg:*)",
+      "Bash(xxd:*)",
+      "Bash(yq:*)",
+      "Bash(z:*)",
+      "Edit(.jira)",
+      "Grep(**)",
+      "LS(**)",
+      "NotebookRead",
+      "WebFetch",
+      "WebSearch",
+      "mcp__chrome-devtools",
+      "mcp__github__actions_get",
+      "mcp__github__actions_list",
+      "mcp__github__get_code_quality_finding",
+      "mcp__github__get_code_scanning_alert",
+      "mcp__github__get_commit",
+      "mcp__github__get_dependabot_alert",
+      "mcp__github__get_discussion_comments",
+      "mcp__github__get_discussion",
+      "mcp__github__get_file_contents",
+      "mcp__github__get_gist",
+      "mcp__github__get_job_logs",
+      "mcp__github__get_label",
+      "mcp__github__get_latest_release",
+      "mcp__github__get_me",
+      "mcp__github__get_notification_details",
+      "mcp__github__get_release_by_tag",
+      "mcp__github__get_repository_tree",
+      "mcp__github__get_tags",
+      "mcp__github__get_team_members",
+      "mcp__github__get_teams",
+      "mcp__github__github_support_docs_search",
+      "mcp__github__issue_read",
+      "mcp__github__list_branches",
+      "mcp__github__list_code_scanning_alerts",
+      "mcp__github__list_commits",
+      "mcp__github__list_dependabot_alerts",
+      "mcp__github__list_discussion_categories",
+      "mcp__github__list_discussions",
+      "mcp__github__list_gist",
+      "mcp__github__list_issue_fields",
+      "mcp__github__list_issue_types",
+      "mcp__github__list_issues",
+      "mcp__github__list_label",
+      "mcp__github__list_notifications",
+      "mcp__github__list_pull_requests",
+      "mcp__github__list_releases",
+      "mcp__github__list_repository_collaborators",
+      "mcp__github__list_starred_repositories",
+      "mcp__github__list_tags",
+      "mcp__github__projects_get",
+      "mcp__github__projects_list",
+      "mcp__github__pull_request_read",
+      "mcp__github__search_code",
+      "mcp__github__search_commits",
+      "mcp__github__search_issues",
+      "mcp__github__search_orgs",
+      "mcp__github__search_pull_requests",
+      "mcp__github__search_repositories",
+      "mcp__zenhub__getIssueTypes",
+      "mcp__zenhub__getIssuesInPipeline",
+      "mcp__zenhub__getSprint",
+      "mcp__zenhub__getTeamMembers",
+      "mcp__zenhub__getUpcomingSprint",
+      "mcp__zenhub__getWorkspacePipelinesAndRepositories",
+      "mcp__zenhub__listRecentSprints",
+      "mcp__zenhub__searchClosedIssues",
+      "mcp__zenhub__searchLatestIssues",
+      "Skill(acli-jira)",
+      "Skill(commit-commands:commit)",
+      "Bash(curl:*)",
+      "Bash(wget:*)"
+    ],
+    "deny": [
+      "Bash(*.npmrc*)",
+      "Bash(*.ssh/id_*)",
+      "Bash(*.zprofile*)",
+      "Bash(*.zsh_history*)",
+      "Bash(*auth.json*)",
+      "Bash(*gh auth token*)",
+      "Read(~/.gnupg/private-keys-v1.d/**)",
+      "Bash(sudo:*)",
+      "Read(./.env*)",
+      "Read(./secrets/**)",
+      "Read(./**/credentials*)",
+      "Read(**/*credential*)",
+      "Read(./**/*.key)",
+      "Read(./**/*.pem)",
+      "Bash(git add -A:*)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.azure/**)",
+      "Read(~/.npmrc)",
+      "Read(~/.git-credentials)",
+      "Edit(~/.bashrc)",
+      "Edit(~/.zshrc)",
+      "Bash(ssh *)",
+      "Read(*.env)",
+      "Read(.env.*)",
+      "Read(.sftp_pass)"
+    ],
+    "ask": [
+      "mcp__zenhub__addIssuesToSprints",
+      "mcp__zenhub__assignIssues",
+      "mcp__zenhub__createBlockage",
+      "mcp__zenhub__createGitHubIssue",
+      "mcp__zenhub__createZenhubIssue",
+      "mcp__zenhub__moveIssueToPipeline",
+      "mcp__zenhub__removeIssuesFromSprints",
+      "mcp__zenhub__setDatesForIssue",
+      "mcp__zenhub__setIssueEstimate",
+      "mcp__zenhub__setIssueType",
+      "mcp__zenhub__setParentForIssues",
+      "mcp__zenhub__updateIssue"
+    ],
+    "defaultMode": "default"
+  },
+  "model": "opus[1m]",
+  "enableAllProjectMcpServers": false,
+  "hooks": {
+    "PostCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/read-once/compact.sh"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/pre-compact-instructions.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/protect-files.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/read-once/hook.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/gh-softwrap/hook.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/tomjn/.claude/file-guard/hook.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/tomjn/.claude/bash-guard/hook.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/tomjn/.claude/git-safe/hook.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "ExitWorktree",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/tomjn/.claude/worktree-guard/hook.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/normalize-bash.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-bash-substitutes.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-git-push.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-write.js"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-write.js"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/inject-output-protocols.js"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/scripts/stop-hook-usage.ts",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash -c 'IN=$(cat); export CLAUDE_HUD_ALLOW_EXTRA_CMD=1; printf '\"'\"'%s'\"'\"' \"$IN\" | bash \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/abtop-statusline.sh; cols=$(stty size </dev/tty 2>/dev/null | awk '\"'\"'{print $2}'\"'\"'); cols=${cols:-${COLUMNS:-120}}; export COLUMNS=$(( cols > 4 ? cols - 4 : 1 )); plugin_dir=$(ls -d \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/plugins/cache/*/claude-hud/*/ 2>/dev/null | awk -F/ '\"'\"'{ print $(NF-1) \"\\t\" $(0) }'\"'\"' | grep -E '\"'\"'^[0-9]+\\.[0-9]+\\.[0-9]+[[:space:]]'\"'\"' | sort -t. -k1,1n -k2,2n -k3,3n -k4,4n | tail -1 | cut -f2-); printf '\"'\"'%s'\"'\"' \"$IN\" | \"$HOME/.bun/bin/bun\" --env-file /dev/null \"${plugin_dir}src/index.ts\" --extra-cmd=\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hud-pace.sh | perl \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hud-polish.pl'"
+  },
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true,
+    "claude-hud@claude-hud": true,
+    "commit-commands@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "human-made-standards@hm-standards": true,
+    "php-lsp@claude-plugins-official": true,
+    "superpowers@superpowers-marketplace": true,
+    "humanize@claude-settings": true,
+    "swift-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "hm-standards": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/humanmade/claude-code-standards.git"
+      }
+    },
+    "claude-settings": {
+      "source": {
+        "source": "github",
+        "repo": "fcakyon/claude-codex-settings"
+      }
+    }
+  },
+  "outputStyle": "Explanatory",
+  "effortLevel": "high",
+  "autoDreamEnabled": true,
+  "showThinkingSummaries": true,
+  "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "preferredNotifChannel": "ghostty",
+  "autoMode": {
+    "environment": [
+      "$defaults"
+    ]
+  }
+}

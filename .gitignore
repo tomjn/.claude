@@ -37,6 +37,7 @@ plans-archive/
 !skills/**
 !hooks/**
 !scripts/**
+!tests/**
 
 # Hook directories: the scripts only, not the state they write.
 !bash-guard/*.sh
