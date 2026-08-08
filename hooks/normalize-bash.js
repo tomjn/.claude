@@ -91,7 +91,13 @@ function analyzeSegment(segment) {
   if (!trimmed) return { effective: '', isBuiltin: false, replacement: null };
   const tokens = tokenize(trimmed);
   const i = stripPrefix(tokens);
-  if (i >= tokens.length) return { effective: '', isBuiltin: false, replacement: null };
+  // The prefix stripper consumed every token, so the segment is a bare launcher
+  // such as `env` with nothing after it. That is not nothing: bare `env` dumps
+  // the environment. Flag it as unresolved so the caller refuses to auto-allow
+  // rather than judging the command on its other segments alone.
+  if (i >= tokens.length) {
+    return { effective: '', isBuiltin: false, replacement: null, unresolved: true };
+  }
   const orig = tokens[i];
   const cmdWord = normalize(orig);
   if (SAFE_BUILTINS.has(cmdWord)) {
@@ -140,9 +146,11 @@ function main() {
 
   const parts = splitTopLevelPreserving(cmd);
   const effectives = [];
+  let unresolved = false;
   const rewrittenParts = parts.map((part, idx) => {
     if (idx % 2 === 1) return part; // captured separator
     const a = analyzeSegment(part);
+    if (a.unresolved) unresolved = true;
     if (a.isBuiltin) return part;
     if (a.effective) effectives.push(a.effective);
     if (a.replacement) {
@@ -165,7 +173,7 @@ function main() {
   // would grant `echo $(rm -rf / | x)` off the `echo` rule, so never auto-allow
   // when a substitution is present — defer to the normal prompt instead. The
   // rewrite (updatedInput) above is unaffected; only the allow grant is gated.
-  if (effectives.length > 0 && !hasSubstitution(cmd)) {
+  if (effectives.length > 0 && !unresolved && !hasSubstitution(cmd)) {
     const rules = loadRules();
     const anyDeny = effectives.some((e) => rules.deny.some((p) => matchesRule(e, p)));
     const anyAsk = effectives.some((e) => rules.ask.some((p) => matchesRule(e, p)));

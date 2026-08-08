@@ -48,8 +48,18 @@ function allow() {
   process.exit(0);
 }
 
+// Only the PreToolUse path ever blocks, so the event name is fixed. The
+// PostToolUse path records a touch and always allows.
 function block(reason) {
-  process.stdout.write(JSON.stringify({ decision: 'block', reason }));
+  process.stdout.write(
+    JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'deny',
+        permissionDecisionReason: reason,
+      },
+    })
+  );
   process.exit(0);
 }
 

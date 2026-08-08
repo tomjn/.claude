@@ -3,7 +3,7 @@
  * Hook integration tests.
  *
  * Each case feeds a Bash PreToolUse JSON payload to a guard via stdin and
- * checks whether the guard emitted `{"decision":"block",...}` (block) or
+ * checks whether the guard emitted a `permissionDecision` of `deny` (block) or
  * exited silently (allow). No external test framework — keep deps zero so
  * `node test/guards.test.js` works on any machine that can run the hooks.
  *
@@ -114,7 +114,7 @@ let pass = 0;
 let fail = 0;
 for (const [hook, cmd, expected, label] of cases) {
   const { stdout } = run(hook, cmd);
-  const got = stdout.includes('"decision":"block"') ? 'block' : 'allow';
+  const got = stdout.includes('"permissionDecision":"deny"') ? 'block' : 'allow';
   const ok = got === expected;
   const tag = path.basename(hook).replace('.js', '').replace('guard-', '');
   if (ok) {
@@ -256,6 +256,33 @@ libCheck('hasSubstitution <()', () => lib.hasSubstitution('diff <(a) <(b)') === 
 libCheck('hasSubstitution none', () => lib.hasSubstitution("jq '.a | .b' f.json") === false);
 libCheck('hasSubstitution plain parens', () => lib.hasSubstitution('(cd x && y)') === false);
 
+// ─── normalize-bash: auto-allow must fail closed ─────────────────────────
+// These assert the ABSENCE of an auto-allow, which holds on any machine. A
+// positive case would depend on the local allowlist, so it is not asserted.
+//
+// Regression: a segment that is only a launcher word (env, command, exec) had
+// its whole command word consumed by stripPrefix, leaving an empty effective
+// that was silently skipped. The verdict then rested on the other segments, so
+// `env | wc -l` was auto-allowed on the strength of `wc -l` alone. Bare env
+// dumps the environment, and the Boucle bash-guard blocks it for that reason.
+const noAllowCases = [
+  ['env | wc -l', 'bare launcher segment vetoes auto-allow'],
+  ['/usr/bin/env | wc -l', 'absolute-path launcher segment vetoes auto-allow'],
+  ['command | wc -l', 'other bare launcher words veto too'],
+];
+
+for (const [cmd, label] of noAllowCases) {
+  const { allowed } = parseNormalize(run(NORMALIZE, cmd).stdout);
+  if (!allowed) {
+    pass++;
+    console.log(`OK   [normalize-bash] no-allow ${label}`);
+  } else {
+    fail++;
+    console.log(`FAIL [normalize-bash] expected no auto-allow, got allow: ${label}`);
+    console.log(`     cmd: ${cmd}`);
+  }
+}
+
 // ─── guard-write: session-state sequences ────────────────────────────────
 // guard-write is stateful, so each case is an ordered sequence of hook calls
 // against one throwaway session id. A step with event 'Post' models the tool
@@ -365,7 +392,7 @@ writeCases.forEach(([label, steps], i) => {
   steps.forEach((step, s) => {
     const stdout = runWrite(sessionId, { ...step, file: F });
     if (!step.want) return;
-    const got = stdout.includes('"decision":"block"') ? 'block' : 'allow';
+    const got = stdout.includes('"permissionDecision":"deny"') ? 'block' : 'allow';
     if (got !== step.want) {
       ok = false;
       detail += ` [step ${s + 1} ${step.tool}: expected=${step.want} got=${got}]`;

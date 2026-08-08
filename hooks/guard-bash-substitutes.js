@@ -45,7 +45,15 @@ function allow() {
 }
 
 function block(reason) {
-  process.stdout.write(JSON.stringify({ decision: 'block', reason }));
+  process.stdout.write(
+    JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'deny',
+        permissionDecisionReason: reason,
+      },
+    })
+  );
   process.exit(0);
 }
 

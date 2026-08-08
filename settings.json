@@ -275,6 +275,10 @@
       "Read(**/*credential*)",
       "Read(./**/*.key)",
       "Read(./**/*.pem)",
+      "Edit(./**/*.key)",
+      "Edit(./**/*.pem)",
+      "Write(./**/*.key)",
+      "Write(./**/*.pem)",
       "Bash(git add -A:*)",
       "Read(~/.ssh/**)",
       "Read(~/.aws/**)",
@@ -330,15 +334,6 @@
       }
     ],
     "PreToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/protect-files.sh"
-          }
-        ]
-      },
       {
         "matcher": "Read",
         "hooks": [
