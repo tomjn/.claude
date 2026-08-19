@@ -34,6 +34,7 @@
       "Bash(acli jira user search:*)",
       "Bash(acli jira workitem:*)",
       "Bash(acli sprint list:*)",
+      "Bash(agent-browser:*)",
       "Bash(ast-grep:*)",
       "Bash(bat:*)",
       "Bash(btop:*)",
@@ -195,7 +196,6 @@
       "Grep(**)",
       "LS(**)",
       "NotebookRead",
-      "WebFetch",
       "WebSearch",
       "mcp__chrome-devtools",
       "mcp__github__actions_get",
@@ -257,6 +257,7 @@
       "mcp__zenhub__searchLatestIssues",
       "Skill(acli-jira)",
       "Skill(commit-commands:commit)",
+      "Skill(file-pr)",
       "Bash(curl:*)",
       "Bash(wget:*)"
     ],
@@ -277,8 +278,7 @@
       "Read(./**/*.pem)",
       "Edit(./**/*.key)",
       "Edit(./**/*.pem)",
-      "Write(./**/*.key)",
-      "Write(./**/*.pem)",
+      "WebFetch",
       "Bash(git add -A:*)",
       "Read(~/.ssh/**)",
       "Read(~/.aws/**)",
@@ -474,7 +474,8 @@
     "php-lsp@claude-plugins-official": true,
     "superpowers@superpowers-marketplace": true,
     "humanize@claude-settings": true,
-    "swift-lsp@claude-plugins-official": true
+    "swift-lsp@claude-plugins-official": true,
+    "figma@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "hm-standards": {
