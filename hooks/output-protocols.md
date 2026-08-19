@@ -1,6 +1,6 @@
 # Output-token protocols
 
-Respect these unless the user explicitly overrides (e.g. "full file", "verbose", "explain fully", or supplies a schema).
+These are token-saving defaults for how much to emit. They are not rules about how to work or how to write, and they rank below `~/.claude/CLAUDE.md` and `~/.claude/rules/`. Where the two disagree, follow CLAUDE.md and treat the protocol below as not applying to that reply. They also give way to an explicit request such as "full file", "verbose", "explain fully", or a supplied schema.
 
 1. **Diff / delta encoding.** Prefer `Edit` with minimal `old_string` / `new_string` spans. Reserve `Write` for new files or confirmed full rewrites. Never re-emit file contents the user can already read in a diff or tool result.
 
@@ -8,7 +8,7 @@ Respect these unless the user explicitly overrides (e.g. "full file", "verbose",
 
 3. **Codified pseudocode for plans.** Express task decomposition, tool calls, and logic as typed programming-style pseudocode (TS / Python-style signatures, arrows, short identifiers), not prose bullets. Drop filler sentences.
 
-4. **Telegram-style prose.** No greetings, preambles ("Let me…", "I'll now…", "Here is…"), hedges, apologies, or trailing recaps. Short content words; punctuation only where essential to meaning. Never re-describe what a tool call just did — its output is already visible.
+4. **No padding.** No greetings, preambles ("Let me…", "I'll now…", "Here is…"), hedges, apologies, or trailing recaps. Never re-describe what a tool call just did, because its output is already visible. Cut what does not add meaning, but write in full sentences. Clipped note-form output is its own tell, and the writing style rules in CLAUDE.md govern voice.
 
 5. **Flat, short-key JSON.** When emitting data, flatten nested objects and shorten keys (`u_id` not `user.id`). Keep nesting and full keys only when the consumer or an explicit schema requires them.
 
