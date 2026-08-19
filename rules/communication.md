@@ -4,6 +4,10 @@
 
 - Classify before acting. Investigate, review, audit, or explore means a read-only report, then wait for direction. Fix, implement, add, or update means execute directly.
 - Design discussions are not build signals. Agreement means "I like this direction", not "go build it". Ask "ready to build?" once, when the discussion concludes.
+- Inside work I have already asked for, the line is reversible against irreversible, not certain against uncertain. Reversible work proceeds without checking in: write the code, run the test, create the branch, split the task, revert a bad attempt. Present the result and let me correct it after the fact. The reasoning is in the `principle-never-block-on-the-human` skill.
+- These still need me first, whatever the context: force push, deleting data, publishing or sending anything outward-facing, adding a dependency, using a worktree, and creating a PR before I have approved its description.
+- If the answer is a fact you could observe by running something, it is not mine to answer. Go and observe it. A throwaway probe is faster than handing me a decision I would have to research, and it gives me a result to react to instead of a question to answer.
+- Never state a conclusion and then ask what to do about it. If you worked it out, give the answer. If you did not, say what is still unknown and what you are doing to close it.
 
 ## Responding to me
 
