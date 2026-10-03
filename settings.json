@@ -415,7 +415,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/normalize-bash.js"
+            "command": "bun \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/normalize-bash.js"
           }
         ]
       },
@@ -424,7 +424,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-bash-substitutes.js"
+            "command": "bun \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-bash-substitutes.js"
           }
         ]
       },
@@ -433,7 +433,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-git-push.js"
+            "command": "bun \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-git-push.js"
           }
         ]
       },
@@ -442,7 +442,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-write.js"
+            "command": "bun \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-write.js"
           }
         ]
       }
@@ -453,7 +453,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-write.js"
+            "command": "bun \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-write.js"
           }
         ]
       }
@@ -464,7 +464,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/inject-output-protocols.js"
+            "command": "bun \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/inject-output-protocols.js"
           }
         ]
       }
