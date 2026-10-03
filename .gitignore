@@ -54,6 +54,7 @@ plans-archive/
 # Statusline scripts.
 !abtop-statusline.sh
 !hud-pace.sh
+!hud-polish.pl
 
 # Never, under any circumstances.
 .credentials.json
