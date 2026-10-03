@@ -265,7 +265,6 @@ I am not keen on work tree use. If you orchestrate agents that use work trees, c
 
 ## CLI tools
 
-- `jq` / `yq` are both installed for JSON and YAML processing.
 - `gh`: installed and logged in. Use it for PR creation over the MCP.
   - no hard wrapping at fixed column widths when creating issues or pull requests with `gh`, always use soft wrapping.
 - `timeout` is installed.
