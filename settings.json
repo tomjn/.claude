@@ -379,7 +379,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/tomjn/.claude/file-guard/hook.sh"
+            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/file-guard/hook.sh"
           }
         ]
       },
@@ -388,7 +388,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/tomjn/.claude/bash-guard/hook.sh"
+            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/bash-guard/hook.sh"
           }
         ]
       },
@@ -397,7 +397,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/tomjn/.claude/git-safe/hook.sh"
+            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/git-safe/hook.sh"
           }
         ]
       },
@@ -406,7 +406,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/tomjn/.claude/worktree-guard/hook.sh"
+            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/worktree-guard/hook.sh"
           }
         ]
       },
