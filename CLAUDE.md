@@ -263,6 +263,10 @@ If you need a paragraph-long comment to justify why a workaround is OK, the code
 
 I am not keen on work tree use. If you orchestrate agents that use work trees, clean up after them. Running out of disk space is a real and semi-regular problem.
 
+## Account Creation and Finances
+
+You must never sign up or create accounts for 3rd party services, or take actions that involve spending money, unless explicitly instructed to by myself. Always ask for permission, and ask again to confirm even if you think you have prior permission.
+
 ## CLI tools
 
 - `gh`: installed and logged in. Use it for PR creation over the MCP.
