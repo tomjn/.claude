@@ -241,6 +241,8 @@ Name what would change the size when it is not obvious, e.g. "M, or S if the tes
 
 Filing a pull request always goes through the `file-pr` skill. Every time, without exception, including a PR I ask for in passing and PRs an orchestration run creates unattended. Everything about how to write one lives in that skill, so do not work from memory here.
 
+Waiting on a pull request's CI always goes through the `wait-for-ci` skill, including before a merge. Never improvise a watch command or sleep loop.
+
 The rest of this section is commits and issues.
 
 Written for a technical human reviewer who will read the diff. Keep them short.
@@ -293,6 +295,16 @@ You must never sign up or create accounts for 3rd party services, or take action
 - Exclude from searches: `node_modules`, `.git`, `build`, `dist`, `.next`, `__pycache__`, `.venv`, `coverage`.
 - When using `rm` only use `-f` if absolutely necessary, there are hooks that will block the commands and trigger permission prompts
 - Do not use `/` and other unsafe system locations as places for temporary files, instead pick a safe location you can read and write to that won't cause problems. If you ignore this a hook will halt you and flag it to me as a dangerous operation.
+
+## Waiting for work to finish
+
+Never poll with `sleep`. No `sleep N; check`, no `until ...; do sleep N; done`, no `while` loops that sleep between checks. In 6 days these loops took 19 hours of tool time across 744 calls.
+
+- For a long command, run it with `run_in_background`. The harness re-invokes you when it exits.
+- For subagents and delegated tasks, wait for the completion notification. Do not check on them in a loop.
+- For pull request CI, use the `wait-for-ci` skill.
+- For something else the harness cannot track, like a deploy, use `ScheduleWakeup`.
+- The one exception is waiting a few seconds for a local server to start. Then a readiness loop is fine if it is wrapped in `timeout`, so it cannot run on.
 
 ## Browser automation
 
