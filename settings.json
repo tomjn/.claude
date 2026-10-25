@@ -332,17 +332,6 @@
   "model": "opus[1m]",
   "enableAllProjectMcpServers": false,
   "hooks": {
-    "PostCompact": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/read-once/compact.sh"
-          }
-        ]
-      }
-    ],
     "PreCompact": [
       {
         "hooks": [
@@ -355,16 +344,6 @@
       }
     ],
     "PreToolUse": [
-      {
-        "matcher": "Read",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/read-once/hook.sh",
-            "timeout": 5
-          }
-        ]
-      },
       {
         "matcher": "Bash",
         "hooks": [
@@ -434,6 +413,15 @@
           {
             "type": "command",
             "command": "bun \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-git-push.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"/hooks/guard-ci-wait.js"
           }
         ]
       },

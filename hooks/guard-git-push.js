@@ -96,6 +96,8 @@ function main() {
       return block(
         'guard-git-push: git push with arguments is blocked. ' +
           'Allowed forms: bare "git push" or exactly "git push origin main". ' +
+          'To publish a new branch to origin, run a bare "git push" on its own: push.autoSetupRemote is on globally, ' +
+          'so it creates the upstream with no extra config. ' +
           'All common bypass forms are also blocked: absolute paths (/usr/bin/git), ' +
           'quoted ("git"), backslash-escape (\\git), launcher wrappers ' +
           '(command/exec/builtin/env/eval git), rtk wrappers (rtk git, rtk proxy|run|err|test|summary git, rtk bash -c "git ..."), ' +
