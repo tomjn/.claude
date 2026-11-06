@@ -134,6 +134,31 @@ Original:
 "Delimiter" and "byte-for-byte" are wasteful technical detail. "The write predicate" is jargon. A valid result is assumed, so do not state it. Better:
 > It reads the flags in each block's <video> tag and writes them into the JSON, reproducing the stored markup. It only touches broken blocks and is safe to re-run.
 
+
+# Images and Videos in GitHub Issues and PRs
+
+> You can attach a local image or video from the command line with GitHub CLI using the --attach flag. GitHub CLI uploads the file to GitHub and writes the resulting URL into the body of your issue, pull request, or comment, so it renders inline just as it would if you attached it in your browser.
+
+Since this is was only possible as of 2026 you may be under the impression no github API allows for this. This is no longer the case, and the installed `gh` has this ability, no need to check or confirm it.
+
+For example an issue comment body:
+
+```
+The sign-in screen shows an error where the form should be:
+
+![the sign-in screen showing an authentication error](PATH/TO/IMAGE)
+```
+and the CLI:
+
+```
+gh issue comment \
+  ISSUE-NUMBER \
+  --body-file PATH/TO/BODY-FILE \
+  --attach PATH/TO/IMAGE
+```
+
+More details at https://docs.github.com/en/github-cli/github-cli/attaching-files-with-github-cli
+
 # Ticket and Issue Creation
 
 Writing a ticket or issue always goes through the `create-ticket` skill. Every time, whatever the tracker, and including a ticket an agent files mid-run. Everything about how to write one lives there, so do not work from memory here.
@@ -241,7 +266,7 @@ Name what would change the size when it is not obvious, e.g. "M, or S if the tes
 
 Filing a pull request always goes through the `file-pr` skill. Every time, without exception, including a PR I ask for in passing and PRs an orchestration run creates unattended. Everything about how to write one lives in that skill, so do not work from memory here.
 
-Waiting on a pull request's CI always goes through the `wait-for-ci` skill, including before a merge. Never improvise a watch command or sleep loop.
+Waiting on a pull request's CI or reviews always goes through the `watch-pr` skill, including before a merge. Never improvise a watch command or sleep loop.
 
 The rest of this section is commits and issues.
 
@@ -302,9 +327,10 @@ Never poll with `sleep`. No `sleep N; check`, no `until ...; do sleep N; done`, 
 
 - For a long command, run it with `run_in_background`. The harness re-invokes you when it exits.
 - For subagents and delegated tasks, wait for the completion notification. Do not check on them in a loop.
-- For pull request CI, use the `wait-for-ci` skill.
+- For pull request CI and reviews, use the `watch-pr` skill.
 - For something else the harness cannot track, like a deploy, use `ScheduleWakeup`.
 - The one exception is waiting a few seconds for a local server to start. Then a readiness loop is fine if it is wrapped in `timeout`, so it cannot run on.
+- Never pipe into `tail` or `head`, and never use `tail -f`. If the command leaves a background process behind, the pipe stays open and the call hangs until timeout. Redirect to a file and Read it instead. The `guard-pipe-tail` hook enforces this.
 
 ## Browser automation
 
