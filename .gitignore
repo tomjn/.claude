@@ -35,6 +35,8 @@ plans-archive/
 !commands/**
 !rules/**
 !skills/**
+# Skills synced from claude.ai, specific to each config folder.
+skills/synced/
 !hooks/**
 !scripts/**
 !tests/**
