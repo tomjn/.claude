@@ -67,7 +67,17 @@ function block(reason) {
 function isForbiddenPush(segment) {
   const upstream = upstreamOfPipe(segment);
   if (!upstream) return false;
-  const tokens = commandTokens(upstream);
+  // Redirects such as `2>&1` or `> log` are not push arguments.
+  const tokens = [];
+  const raw = commandTokens(upstream);
+  for (let i = 0; i < raw.length; i++) {
+    if (/^(?:\d*|&)[<>]+$/.test(raw[i])) {
+      i++; // bare operator, so the next token is its target
+      continue;
+    }
+    if (/^(?:\d*|&)[<>]/.test(raw[i])) continue; // operator with target attached
+    tokens.push(raw[i]);
+  }
   if (tokens[0] !== 'git') return false;
   if (tokens[1] !== 'push') return false;
   // Bare `git push` (no args) allowed.
