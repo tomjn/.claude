@@ -5,7 +5,7 @@
  *
  * Reads the hook payload from stdin (provides transcript_path and session_id),
  * parses all assistant messages in the transcript, and writes cumulative +
- * latest-turn usage to ~/.claude/usage.json.
+ * latest-turn usage to usage.json in $CLAUDE_CONFIG_DIR (default ~/.claude).
  *
  * Output format:
  * {
@@ -32,7 +32,8 @@ interface Usage {
   cache_creation_input_tokens: number;
 }
 
-const USAGE_PATH = `${process.env.HOME}/.claude/usage.json`;
+const CONFIG_DIR = process.env.CLAUDE_CONFIG_DIR || `${process.env.HOME}/.claude`;
+const USAGE_PATH = `${CONFIG_DIR}/usage.json`;
 
 async function main() {
   const raw = readFileSync('/dev/stdin', 'utf-8');

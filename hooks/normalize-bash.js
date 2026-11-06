@@ -15,7 +15,8 @@
  *   2. **Allowlist re-evaluation.** Split the rewritten command on top-level
  *      `&&`, `||`, `;`, `|`, then check each segment's normalized command word
  *      against the user's `permissions` allow / deny / ask rules read from
- *      `~/.claude/settings.json`, `$cwd/.claude/settings.json`, and
+ *      `$CLAUDE_CONFIG_DIR/settings.json` (default `~/.claude`),
+ *      `$cwd/.claude/settings.json`, and
  *      `$cwd/.claude/settings.local.json`. If every non-builtin segment matches
  *      an `allow` rule and none match `deny` or `ask`, emit
  *      `permissionDecision: "allow"` so Claude Code skips the prompt.
@@ -113,10 +114,10 @@ function analyzeSegment(segment) {
 }
 
 function loadRules() {
-  const home = os.homedir();
+  const configDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
   const cwd = process.cwd();
   const paths = [
-    path.join(home, '.claude', 'settings.json'),
+    path.join(configDir, 'settings.json'),
     path.join(cwd, '.claude', 'settings.json'),
     path.join(cwd, '.claude', 'settings.local.json'),
   ];
