@@ -103,7 +103,7 @@ const cases = [
   [GUARD_BASH, 'find . -mtime -1', 'allow', 'find with non-name predicate'],
   [GUARD_BASH, 'cat bar.txt # tool-guard: allow', 'allow', 'escape hatch'],
   // The token used to be `# bash-guard: allow`, which collided with the Boucle
-  // bash-guard hook in ~/.claude/bash-guard. That hook requires an operation
+  // bash-guard hook in $CLAUDE_CONFIG_DIR/bash-guard. That hook requires an operation
   // name after allow, so `# bash-guard: allow inplace-edit` satisfied both and
   // switched this guard off as a side effect. The old token must not work now.
   [GUARD_BASH, 'cat bar.txt # bash-guard: allow', 'block', 'old colliding token is inert'],

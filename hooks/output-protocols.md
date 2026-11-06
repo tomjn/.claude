@@ -1,6 +1,6 @@
 # Output-token protocols
 
-These are token-saving defaults for how much to emit. They are not rules about how to work or how to write, and they rank below `~/.claude/CLAUDE.md` and `~/.claude/rules/`. Where the two disagree, follow CLAUDE.md and treat the protocol below as not applying to that reply. They also give way to an explicit request such as "full file", "verbose", "explain fully", or a supplied schema.
+These are token-saving defaults for how much to emit. They are not rules about how to work or how to write, and they rank below the user `CLAUDE.md` and `rules/` in the Claude config directory. Where the two disagree, follow CLAUDE.md and treat the protocol below as not applying to that reply. They also give way to an explicit request such as "full file", "verbose", "explain fully", or a supplied schema.
 
 1. **Diff / delta encoding.** Prefer `Edit` with minimal `old_string` / `new_string` spans. Reserve `Write` for new files or confirmed full rewrites. Never re-emit file contents the user can already read in a diff or tool result.
 

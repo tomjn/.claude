@@ -20,7 +20,7 @@
  *   - Multi-line commands and heredocs fail open (too risky to parse).
  *   - Commands containing `# tool-guard: allow` are always allowed. The token
  *     deliberately avoids the name `bash-guard`, which belongs to the Boucle
- *     framework hook in ~/.claude/bash-guard and uses its own token syntax.
+ *     framework hook in $CLAUDE_CONFIG_DIR/bash-guard and uses its own token syntax.
  *   - Any parse error or unexpected input fails open.
  *
  * Hook protocol: read PreToolUse JSON from stdin; emit

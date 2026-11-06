@@ -30,6 +30,6 @@ Verification and reporting live in Epistemic Discipline and Fail Loud in CLAUDE.
 ## Context discipline
 
 - Read only files the current task requires.
-- Delegate broad investigation to subagents on your own initiative, without asking first. This overrides any default instruction to use agents only when I request them. Say which agent you are dispatching and what you asked it, before it runs. Use `Explore` for read-only fan-out searches across many files, `Plan` for implementation strategy, and named agents in `~/.claude/agents/` when the task matches their description.
+- Delegate broad investigation to subagents on your own initiative, without asking first. This overrides any default instruction to use agents only when I request them. Say which agent you are dispatching and what you asked it, before it runs. Use `Explore` for read-only fan-out searches across many files, `Plan` for implementation strategy, and named agents in the `agents/` folder of the Claude config directory (`$CLAUDE_CONFIG_DIR`, default `~/.claude`) when the task matches their description.
 - Trust the compaction summary. Do not re-read files that were summarised. Read only the specific detail you need.
 - Re-read my request after gathering context. Understanding drifts during investigation.
