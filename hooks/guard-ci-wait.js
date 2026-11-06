@@ -2,12 +2,14 @@
 /**
  * PreToolUse hook for Bash.
  *
- * Purpose: route every CI wait through the wait-for-ci skill. Blocks the
+ * Purpose: route every PR and CI wait through the watch-pr skill. Blocks the
  * patterns that hang, block the turn, or misread "no checks yet" as a failure:
  *   - `gh run watch`
  *   - `gh pr checks ... --watch`
  *   - until/while loops that sleep and poll gh or a background task's output file
- *   - the skill's monitor script run in the foreground
+ *   - the skill's pr-wait script run in the foreground
+ *
+ * Only Bash calls reach this hook, so pr-wait under the Monitor tool is allowed.
  *
  * This guards a habit, not a security boundary, so it matches the raw command
  * text, multi-line commands included, rather than parsing it.
@@ -21,7 +23,9 @@
 
 const fs = require('fs');
 
-const SKILL = 'Use the wait-for-ci skill instead.';
+const SKILL = 'Use the watch-pr skill instead.';
+// pr-wait run through python3 or uv run, or executed directly by path.
+const PR_WAIT = /(\b(python3?|uv\s+run)(\s+-\S+)*\s+[^\s;&|]*pr-wait|(^|[;&|(]\s*|\n\s*)[^\s;&|]*\/pr-wait)(?=\s|$|['"])/;
 
 function allow() {
   process.exit(0);
@@ -65,8 +69,8 @@ function main() {
   if (/\b(until|while)\b/.test(cmd) && /\bsleep\b/.test(cmd) && /\/tasks\/[^\s'"]*\.output\b/.test(cmd)) {
     return block('A sleep loop polling a background task output file blocks the turn; its completion notification is already on the way.');
   }
-  if (/\b(uv\s+run|python3?)(\s+-\S+)*\s+[^\s;&|]*monitor_pr_checks\.py\b/.test(cmd) && toolInput.run_in_background !== true) {
-    return block('Run the monitor script with run_in_background, then end the turn.');
+  if (PR_WAIT.test(cmd) && toolInput.run_in_background !== true) {
+    return block('pr-wait in the foreground blocks the turn. Run it with the Monitor tool, or Bash run_in_background, then end the turn.');
   }
   allow();
 }
