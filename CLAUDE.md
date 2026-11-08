@@ -88,6 +88,7 @@ Sourcing
 Saying something real
 
 - Say what it does, not how it feels. "the database stays close at hand" and "SQL you can read" name a feeling. Name the mechanism or the number: "`.toSQL()` returns the exact string sent to the database", "a column rename fails the build". Ask what the sentence tells the reader to do or know, then write that. If the sentence could appear unchanged in another project's docs, it says nothing about this one. Cut it.
+- Write from the reader's side, not the code's. Before writing about how something behaves, ask what the reader sees or can do, then say that. Don't turn a guard clause into text ("A key held with Ctrl is never taken"). Say who does what, in words the reader already uses ("Browser shortcuts like Ctrl+R still work"). Watch for passives with no actor ("is handled", "is taken", "is ignored"). Watch for terms that only make sense inside the code, and for rules stated as what never happens. Each one means the sentence describes the code, not what the reader gets.
 - Cut adverbs, or use a stronger verb. "runs quickly" is "is fast" or the number. "significantly improves" is the measured delta. An adverb propping up a weak verb means the verb is wrong.
 - Split dense sentences. If I have to backtrack to parse it, break it in two.
 
